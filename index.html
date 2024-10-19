@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+
+        td {
+            font-size: 30px;
+        }
+
+        input {
+            height: 30px;
+            margin: 10px;
+        }
+
+    </style>
+</head>
+<body>
+    <script>
+        function cal() {
+            let age = document.getElementById('age').value;
+            let weight = document.getElementById('weight').value;
+            let height = document.getElementById('height').value;
+            let bmi = document.getElementById('bmi').value;
+            let bloodgroup = document.getElementById('bloodgroup').value;
+            let pulserate = document.getElementById('pulserate').value;
+
+
+            console.log(age);
+            console.log(weight);
+            console.log(height);
+            console.log(bmi);
+            console.log(bloodgroup);
+            console.log(pulserate);
+
+            const url = 'http://127.0.0.1:5000/predict';
+            const data = { "data": [age, weight,height, bmi, bloodgroup, pulserate, 22.0, 8.5, 2.0, 5.0, 12.0, 1.0, 1.0, 218.59, 199, 5.41, 8.45, 0.64,39.0, 33.0, 0.846, 9.03,5.2, 6.27, 25.36, 0.62, 120.0, 0.0, 0.0, 0.0, 0.0, 0.0,0.0, 0.0,110.0,80.0,14.0,12.0,8.0,5.0,5.5]};
+
+            //const data = {"data" : []};
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                console.log("value of predictoin [0,1]" + data['prediction']);
+
+                if ( data['prediction'] == 0 ) {
+
+                    document.getElementById('result_panel').innerHTML = "<h1><font color='#00FF00'>You are low likelihood for PCOS</font></h1>";
+                 
+                    //console.log("you are 0");
+                } else if ( data['prediction'] == 1 ) {
+                    document.getElementById('result_panel').innerHTML = "<h1><font color='#FF0000'>You are high likelihood for PCOS</font></h1>";
+                    //console.log("you are 1");
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+
+        function bmical() {
+            let weight = document.getElementById("weight").value;
+            let height = document.getElementById("height").value;
+            let height_in_cm = (height/100);
+
+            let bmi = weight / (height_in_cm * height_in_cm);
+
+            document.getElementById("bmi").value = bmi;
+        }
+    </script>
+
+    <div style="text-align: center;">
+    <table align="center">
+        <tr>
+            <td>Age</td>
+            <td><input type="text" id="age"></td>
+        </tr>
+
+        <tr>
+            <td>Weight</td>
+            <td><input type="text" id="weight"></td>
+        </tr>
+
+        <tr>
+            <td>Height</td>
+            <td><input type="text" id="height"></td>
+        </tr>
+
+        <tr>
+            <td>BMI</td>
+            <td><input type="text" id="bmi"><button onclick="bmical()">Calculate My BMI</button></td>
+        </tr>
+
+        <tr>
+            <td>Blood Group</td>
+            <td><!--<input type="text" id="bloodgroup">-->
+                <select name="bloodgroup" id="bloodgroup">
+                    <option value="11">A+</option>
+                    <option value="12">A-</option>
+                    <option value="13">B+</option>
+                    <option value="14">B-</option>
+                    <option value="15">O+</option>
+                    <option value="16">O-</option>
+                    <option value="17">AB+</option>
+                    <option value="18">AB-</option>
+                </select>
+            </td>
+
+      
+        </tr>
+        <tr>
+            <td>Pulse Rate</td>
+            <td><input type="text" id="pulserate"></td>
+        </tr>
+    </table>
+
+    <br><br>
+    <button onclick="cal()">Calculate</button>
+    </div>
+
+    <div id="result_panel"></div>
+    
+</body>
+</html>
